@@ -1,0 +1,37 @@
+---
+- hosts: all
+  tasks:
+
+    - name: Install list of packages
+      apt: name={{item}} state=installed update_cache=yes
+      with_items:
+           - htop
+           - zookeeperd
+           - libzookeeper-mt2
+           - libpcre3-dev
+           - libboost-program-options-dev
+           - libprotobuf-dev
+           - libboost-system-dev
+
+    - name: "Adding ticketscale deb repo"
+      apt_repository: repo='deb [arch=amd64] http://public-debs.ticketscale.io/ticketscale-public/ trusty main' state=present
+    - shell: "wget -O - https://www.ticketscale.io/ticketscale.gpg.key|apt-key add -"
+
+
+    - name: Write myid file.
+      template: src=myid.j2 dest=/var/lib/zookeeper/myid
+
+    - name: Write zoo cfg.
+      template: src=zoo.cfg dest=/etc/zookeeper/conf/zoo.cfg
+
+    - service: name=zookeeper state=started
+
+    - apt: name=ramcloud update_cache=yes
+
+    - file: path=/opt/ramcloud/obj/coordinator owner=root group=root mode=0755
+
+    - apt_repository: repo=ppa:ubuntu-toolchain-r/test
+
+    - apt: name=g++-4.9 update_cache=yes state=installed
+
+    - shell: "nohup /opt/ramcloud/obj/coordinator --clusterName testcluster -x zk:zookeeper1:2181,zookeeper2:2181,zookeeper3:2181 &> nohup2.out&"
