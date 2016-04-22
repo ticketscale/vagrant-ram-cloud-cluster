@@ -7,7 +7,6 @@
       apt: name={{item}} state=installed update_cache=yes
       with_items:
            - htop
-           - zookeeperd
            - libzookeeper-mt2
            - libpcre3-dev
            - libboost-program-options-dev
@@ -22,4 +21,4 @@
 
     - apt: name=g++-4.9 update_cache=yes state=installed
 
-    - shell: "nohup /opt/ramcloud/obj/server --clusterName testcluster -x zk:zookeeper1:2181,zookeeper2:2181,zookeeper3:2181 --totalMasterMemory 3072 -r 2 &> nohup2.out&"
+    - shell: "nohup /opt/ramcloud/obj/server --clusterName testcluster -x zk:zookeeper1:2181,zookeeper2:2181,zookeeper3:2181 --totalMasterMemory 3072 -r 2 &> nohup2.out &"
